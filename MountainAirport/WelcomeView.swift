@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct WelcomeView: View {
-  //
   @StateObject var flightInfo = FlightData()
   
   var body: some View {

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WelcomeView: View {
   enum Dest: Hashable {
-    case allFlights, lastFlight
+    case allFlights, searchFlight, lastFlight
   }
   
   @StateObject var flightInfo = FlightData()
@@ -19,6 +19,9 @@ struct WelcomeView: View {
           NavigationLink(value: Dest.allFlights) {
             WelcomeButtonView(title: "Flight Status", subTitle: "Departure and arrival information")
           }
+          NavigationLink(value: Dest.searchFlight) {
+            WelcomeButtonView(title: "Search Flights", subTitle: "Search Upcoming Flights")
+          }
           NavigationLink(value: Dest.lastFlight) {
             if let id = lastFlightInfo.lastFlightId,
                let lastFlight = flightInfo.getFlightById(id) {
@@ -30,6 +33,7 @@ struct WelcomeView: View {
         .navigationDestination(for: Dest.self, destination: {
           switch $0 {
           case .allFlights: FlightStatusBoard(flights: flightInfo.getDaysFlights(Date()))
+          case .searchFlight: SearchFlights(flightData: flightInfo.flights)
           case .lastFlight:
             if let id = lastFlightInfo.lastFlightId,
                let lastFlight = flightInfo.getFlightById(id) {

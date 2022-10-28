@@ -18,10 +18,6 @@
 /// merger, publication, distribution, sublicensing, creation of derivative works,
 /// or sale is expressly withheld.
 ///
-/// This project and source code may use libraries or frameworks that are
-/// released under various Open-Source licenses. Use of those libraries and
-/// frameworks are governed by their own individual licenses.
-///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,28 +26,12 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import SwiftUI
+import Foundation
 
-struct FlightDirectionGraphic: View {
-  var direction: FlightDirection
-
-  var body: some View {
-    ZStack {
-      RoundedRectangle(cornerRadius: 10.0)
-        .foregroundColor(Color(red: 0.9, green: 0.4, blue: 0.69))
-      Image(systemName: "airplane")
-        .resizable()
-        .padding(5)
-        .rotationEffect(.degrees(direction == .arrival ? 45.0 : -45.0))
-    }
-  }
-}
-
-struct FlightDirectionGraphic_Previews: PreviewProvider {
-  static var previews: some View {
-    Group {
-      FlightDirectionGraphic(direction: .arrival)
-      FlightDirectionGraphic(direction: .departure)
-    }.frame(width: 50, height: 50)
+extension Date {
+  var dateOnly: Date {
+    let cdc = Calendar.current.dateComponents([.month, .day, .year], from: self)
+    // swiftlint:disable:next force_unwrapping
+    return Calendar.current.date(from: cdc)!
   }
 }

@@ -1,35 +1,3 @@
-/// Copyright (c) 2021 Razeware LLC
-///
-/// Permission is hereby granted, free of charge, to any person obtaining a copy
-/// of this software and associated documentation files (the "Software"), to deal
-/// in the Software without restriction, including without limitation the rights
-/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-/// copies of the Software, and to permit persons to whom the Software is
-/// furnished to do so, subject to the following conditions:
-///
-/// The above copyright notice and this permission notice shall be included in
-/// all copies or substantial portions of the Software.
-///
-/// Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
-/// distribute, sublicense, create a derivative work, and/or sell copies of the
-/// Software in any work that is designed, intended, or marketed for pedagogical or
-/// instructional purposes related to programming, coding, application development,
-/// or information technology.  Permission for such use, copying, modification,
-/// merger, publication, distribution, sublicensing, creation of derivative works,
-/// or sale is expressly withheld.
-///
-/// This project and source code may use libraries or frameworks that are
-/// released under various Open-Source licenses. Use of those libraries and
-/// frameworks are governed by their own individual licenses.
-///
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-/// THE SOFTWARE.
-
 import SwiftUI
 import GameKit
 
@@ -92,7 +60,9 @@ class FlightData: ObservableObject {
       flights.append(contentsOf: generateFlights(startIndex: idx * 30, date: day, isFuture: idx > 0))
     }
 
-    return flights
+    return flights.sorted {
+      $0.localTime < $1.localTime
+    }
   }
 
   func generateFlights(startIndex: Int, date: Date, isFuture: Bool) -> [FlightInformation] {
@@ -223,6 +193,30 @@ class FlightData: ObservableObject {
       scheduledTime: scheduled,
       actualTime: newTime
     )
+  }
+
+  static func refreshFlights() async -> [FlightInformation] {
+    await Task.sleep(3 * 1_000_000_000) // Three seconds
+    return FlightData.generateTestFlights(date: Date())
+  }
+
+  static func searchFlightsForCity(_ city: String) async -> [FlightInformation] {
+    await Task.sleep(3 * 1_000_000_000) // Three seconds
+
+    let flights = FlightData().flights
+    guard !city.isEmpty else {
+      return flights
+    }
+
+    return flights.filter { $0.otherAirport.lowercased().contains(city.lowercased()) }
+  }
+
+  static func citiesContaining(_ text: String) -> [String] {
+    let cityArray = FlightData().flights.map { $0.otherAirport }
+    let matchingCities =
+    text.isEmpty ? cityArray : cityArray.filter { $0.contains(text) }
+    let citySet = Set(matchingCities)
+    return Array(citySet.sorted())
   }
 
   static func generateTestFlight(date: Date) -> FlightInformation {

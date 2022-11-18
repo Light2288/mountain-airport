@@ -45,6 +45,8 @@ struct SearchFlights: View {
         }
         .background(Color.white)
         .pickerStyle(SegmentedPickerStyle())
+        TextField(" Search cities", text: $city)
+          .textFieldStyle(RoundedBorderTextFieldStyle())
         List {
           ForEach(flightDates, id: \.hashValue) { date in
             Section(

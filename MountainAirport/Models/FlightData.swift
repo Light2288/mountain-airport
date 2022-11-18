@@ -16,12 +16,12 @@ public struct SeededRandomGenerator: RandomNumberGenerator {
   }
 
   init(seed: UInt64) {
-    self.gkrandom = GKMersenneTwisterRandomSource(seed: seed)
+    gkrandom = GKMersenneTwisterRandomSource(seed: seed)
   }
 
   init() {
     let seed = UInt64.random(in: UInt64.min ... UInt64.max)
-    self.gkrandom = GKMersenneTwisterRandomSource(seed: seed)
+    gkrandom = GKMersenneTwisterRandomSource(seed: seed)
   }
 }
 
@@ -41,6 +41,8 @@ class FlightData: ObservableObject {
 
   init() {
     flights = generateSchedule()
+    let historyFlight = flights[0]
+    flights[0] = FlightData.generateTestHistory(flight: historyFlight)
   }
 
   func getFlightById(_ id: Int) -> FlightInformation? {
@@ -227,5 +229,31 @@ class FlightData: ObservableObject {
   static func generateTestFlights(date: Date) -> [FlightInformation] {
     let flightData = FlightData()
     return flightData.flights
+  }
+
+  static func generateTestFlightHistory(date: Date) -> FlightInformation {
+    let flightData = FlightData()
+    let flight = flightData.flights[0]
+    return generateTestHistory(flight: flight)
+  }
+
+  static func generateTestHistory(flight: FlightInformation) -> FlightInformation {
+    let range = 60 + 15
+    for hst in flight.history {
+      let difference = (hst.day - 1) * (range / flight.history.count) - 14
+      if hst.day == 10 {
+        hst.actualTime = nil
+        hst.status = .canceled
+      } else {
+        // swiftlint:disable:next force_unwrapping
+        hst.actualTime = Calendar.current.date(byAdding: .minute, value: difference, to: hst.scheduledTime)!
+        if difference <= 0 {
+          hst.status = .ontime
+        } else {
+          hst.status = .delayed
+        }
+      }
+    }
+    return flight
   }
 }

@@ -7,3 +7,11 @@ var longDateFormatter: DateFormatter {
 
   return ldf
 }
+
+var shortTimeFormatter: DateFormatter {
+  let stf = DateFormatter()
+  stf.dateStyle = .none
+  stf.timeStyle = .short
+
+  return stf
+}

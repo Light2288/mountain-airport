@@ -57,6 +57,18 @@ struct WelcomeView: View {
                 subTitle: "Earn rewards for your airport interactions",
                 imageName: "star.fill")
             }
+            NavigationLink(
+              destination: FlightTimelineView(
+                flights: flightInfo.flights.filter {
+                  Calendar.current.isDate(
+                    $0.localTime,
+                    inSameDayAs: Date()
+                  )
+                }
+              )
+            ) {
+              TimelineButton()
+            }
             if
               let id = appEnvironment.lastFlightId,
               let lastFlight = flightInfo.getFlightById(id) {
